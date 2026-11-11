@@ -1,0 +1,598 @@
+{
+  "name": "Ejercicio Clase 4 DAIANA ATIENZA",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3f4b9666-58bd-4940-b32c-8960ee575402",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "auto-reply",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "825a25e3-68fe-4d65-8621-0f6d46813e56",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "automatic reply",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "1b031e70-7374-44a9-b650-f86353421d54",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "out of office",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "269aaa68-4169-4c07-a29c-172941062f8c",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "undeliverable",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "62aa4176-5b4d-4eef-b6a2-cc2bf20f68f2",
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "delivery status notification",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "d04e0c43-972b-43e8-a402-de53895b1e52",
+              "leftValue": "={{ $json.From }}",
+              "rightValue": "no-reply@",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "b3c170cd-c9e1-4873-b19b-231e5ce1f10e",
+              "leftValue": "={{ $json.From }}",
+              "rightValue": "noreply@",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "e83c45c2-513f-4623-8d81-1fbeeb429477",
+              "leftValue": "={{ $json.From }}",
+              "rightValue": "donotreply",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "e34143d7-412d-42b8-8865-c0b5374ebb4e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "maxResults": {},
+        "filters": {
+          "q": "-from:me"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "144f32a2-39ae-42e3-b478-505f29377415",
+      "name": "anti auto-reply (Guardrail contra bucles)",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hEh4LhG6JPfwFfmJ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        416,
+        -144
+      ],
+      "id": "01c89ba3-b792-4321-87a1-b7390423a712",
+      "name": "ignorar, cortando el bucle"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f23bab9-d916-4440-b1fc-e7ff9e59ac14",
+              "name": "from_email",
+              "value": "={{ $('anti auto-reply (Guardrail contra bucles)').item.json.From }}",
+              "type": "string"
+            },
+            {
+              "id": "4c4a8c68-f745-46b5-ad7f-465fec65346c",
+              "name": "Nombre",
+              "value": "={{ $('anti auto-reply (Guardrail contra bucles)').item.json.labels[1].name }}",
+              "type": "string"
+            },
+            {
+              "id": "b4263df6-16c2-4ef0-b9b0-7a1d19f91761",
+              "name": "Asunto",
+              "value": "={{ $('anti auto-reply (Guardrail contra bucles)').item.json.Subject }}",
+              "type": "string"
+            },
+            {
+              "id": "da33ec95-c8b6-4ad0-afb0-2329f2e0b1d1",
+              "name": "Cuerpo",
+              "value": "={{ $('anti auto-reply (Guardrail contra bucles)').item.json.snippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        96
+      ],
+      "id": "b9fb4701-4330-4598-b067-51a99d3de92e",
+      "name": "prevenir el Error 400 (Bad Request)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b7ad93c8-99b5-4bb1-8941-5fa0dfb3eac6",
+              "leftValue": "={{ $('anti auto-reply (Guardrail contra bucles)').item.json.From }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        96
+      ],
+      "id": "8012b66a-391f-4250-a4c3-13ef2e022977",
+      "name": "Sincronizar la lectura previa y la validación en el CRM (Evitar Error 409)"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/14sTLKKe6T6mPOjol3DhqN4g7pu0N7YYWM6k4LJg0O5A/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14sTLKKe6T6mPOjol3DhqN4g7pu0N7YYWM6k4LJg0O5A/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email",
+              "lookupValue": "={{ $('anti auto-reply (Guardrail contra bucles)').item.json.From }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        0
+      ],
+      "id": "a5b5ce3c-9925-4e02-a188-fe90714cda7c",
+      "name": "Actualizacion",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vb5UIl1542XjTYtt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/14sTLKKe6T6mPOjol3DhqN4g7pu0N7YYWM6k4LJg0O5A/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14sTLKKe6T6mPOjol3DhqN4g7pu0N7YYWM6k4LJg0O5A/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $('anti auto-reply (Guardrail contra bucles)').item.json.From }}",
+            "nombre": "={{ $('anti auto-reply (Guardrail contra bucles)').item.json.labels[1].name }}",
+            "fecha_alta": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_alta",
+              "displayName": "fecha_alta",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        192
+      ],
+      "id": "3191b34d-de35-484c-9fae-e5e8267d8855",
+      "name": "Crear Cliente en sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vb5UIl1542XjTYtt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        192
+      ],
+      "id": "211f1fc8-7479-4609-a02c-a181c65eed5e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2ghyW5WhTghrQqtw",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $('Sincronizar la lectura previa y la validación en el CRM (Evitar Error 409)').item.json.Asunto }}",
+        "message": "={{ $json.output }}",
+        "options": {
+          "threadId": "={{ $('If').item.json.id }}",
+          "sendTo": "={{ $('If').item.json.From }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        0
+      ],
+      "id": "935de3aa-c8d5-4250-a318-3dd97dbd76c0",
+      "name": "Crear borrador para supervisión humana",
+      "webhookId": "12413172-1337-4ae8-8dda-708f7590470b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hEh4LhG6JPfwFfmJ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6f4f35ec-7845-4e50-b64c-212eb7abce0b",
+              "name": "nombre_cliente",
+              "value": "={{ $('If').item.json.labels[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "aeba343e-11f7-44af-bc1a-eaff173fac87",
+              "name": "email_cliente",
+              "value": "={{ $('Sincronizar la lectura previa y la validación en el CRM (Evitar Error 409)').item.json.from_email }}",
+              "type": "string"
+            },
+            {
+              "id": "c042f18c-f436-4241-a48a-5497940a3dfb",
+              "name": "resumen_alerta",
+              "value": "=={{ 'Caso procesado con éxito. Borrador listo en Gmail para revisión humana.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1600,
+        0
+      ],
+      "id": "8ca7e745-ed23-4989-8a59-92e2004217ad",
+      "name": "Texto limpio y corto"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0CG5HR7G23",
+          "mode": "list",
+          "cachedResultName": "todo-seguros-coderhouse"
+        },
+        "text": "=={{ '🚨 *NUEVO CASO DE SEGUROS*' + '\\n' + '• *Cliente:* ' + $json.nombre_cliente + '\\n' + '• *Email:* ' + $json.email_cliente + '\\n' + '• *Estado:* ' + $json.resumen_alerta }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        1808,
+        0
+      ],
+      "id": "df1f34ca-864c-4b56-a33e-b3ea8611b1eb",
+      "name": "Send a message",
+      "webhookId": "98cba3c0-4e90-490d-8030-8ade0724fe40",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "Qgf6EHvRSYb046wW",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## 1. ROL Y ÁMBITO OPERATIVO\nEres el asistente virtual Manager de atención al cliente de la agencia de seguros de Daiana. \nTu objetivo es guiar al usuario de forma clara, empática y profesional, brindando asesoría sobre pólizas, coberturas, siniestros y consultas generales.\n- NO tienes autorización para emitir reembolsos, aplicar descuentos especiales, modificar contratos unilateralmente ni prometer coberturas fuera de las normativas vigentes.\n- Si un usuario solicita una acción fuera de tu ámbito o presenta un reclamo formal/legal, debes detener tu ciclo autónomo e iniciar el protocolo de escalamiento a un operador humano.\n\n## 2. OBJETIVO OPERATIVO\nProcesar las consultas de los clientes utilizando la información del contexto compartido y el historial activo, asegurando una respuesta de alta calidad y preparando borradores o registros trazables para el equipo.\n\n## 3. INYECCIÓN DE CONTEXTO PERSISTENTE (MEMORIA HÍBRIDA)\n[INICIO DE CONTEXTO COMPARTIDO]\n- Nombre del usuario / Datos clave: {{ $('prevenir el Error 400 (Bad Request)').item.json[\"Nombre\"] }}\n- Correo del usuario: {{ $('prevenir el Error 400 (Bad Request)').item.json[\"from_email\"] }}\n- Asunto de la consulta: {{ $('prevenir el Error 400 (Bad Request)').item.json[\"Asunto\"] }}\n- Mensaje recibido: {{ $('prevenir el Error 400 (Bad Request)').item.json[\"Cuerpo\"] }}\n[FIN DE CONTEXTO COMPARTIDO]\n*Instrucción de uso:* Utiliza esta información de forma transparente para dar continuidad a los clientes recurrentes. Si no hay registros previos, trata al usuario como un cliente nuevo sin mencionar variables vacías.\n\n## 4. REGLAS DE USO DE HERRAMIENTAS Y CREDENCIALES\n- Aplica siempre el principio de menor privilegio: utiliza las herramientas de búsqueda y consulta de manera estricta para verificar datos antes de responder.\n- No almacenes ni proceses información sensible innecesaria (números completos de tarjetas, claves o datos bancarios en texto plano).\n\n## 5. GUARDRAILS Y PROTOCOLO DE ESCALAMIENTO\n- Si detectas insultos, frustración evidente, pedidos de devolución de dinero o temas legales complejos, responde con un mensaje cordial y neutral, derivando el caso para revisión humana mediante el sistema de borradores y alertas internas.\n- Mantén siempre un tono profesional, institucional y adaptado a las normativas de la agencia de seguros.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "13d94881-2ab8-48b8-8078-fadc3efa765e",
+      "name": "AI Agent (Atencion al asegurado)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "ignorar, cortando el bucle",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "prevenir el Error 400 (Bad Request)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "anti auto-reply (Guardrail contra bucles)": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prevenir el Error 400 (Bad Request)": {
+      "main": [
+        [
+          {
+            "node": "Sincronizar la lectura previa y la validación en el CRM (Evitar Error 409)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sincronizar la lectura previa y la validación en el CRM (Evitar Error 409)": {
+      "main": [
+        [
+          {
+            "node": "Actualizacion",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Crear Cliente en sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizacion": {
+      "main": [
+        [
+          {
+            "node": "AI Agent (Atencion al asegurado)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent (Atencion al asegurado)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Cliente en sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent (Atencion al asegurado)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear borrador para supervisión humana": {
+      "main": [
+        [
+          {
+            "node": "Texto limpio y corto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Texto limpio y corto": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent (Atencion al asegurado)": {
+      "main": [
+        [
+          {
+            "node": "Crear borrador para supervisión humana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "765310aa-cfb7-4ee5-b3d6-c0ee6a618680",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "30707f37c9920e784dc7b4176652df0b72c86d2502da971bc9380f4e99391c44"
+  },
+  "nodeGroups": [],
+  "id": "7SyhE14FGCqnMJpB",
+  "tags": []
+}
